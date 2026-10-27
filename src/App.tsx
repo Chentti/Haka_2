@@ -1,3 +1,11 @@
+import { RouterProvider } from 'react-router/dom'
+import { AuthProvider } from './auth/AuthProvider'
+import { router } from './router'
+
 export default function App() {
-  return <h1 className="text-3xl font-bold text-blue-600 p-8">Log Pose Console</h1>
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  )
 }

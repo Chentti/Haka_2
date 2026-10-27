@@ -1,1 +1,90 @@
 @import "tailwindcss";
+
+/* ===== Poneglyph: historia de una saga ===== */
+.story {
+  background-color: var(--story-bg);
+  color: var(--story-text);
+  transition: background-color 700ms ease, color 700ms ease;
+}
+
+/* Progreso global: el ancho depende del scroll. */
+.scroll-progress {
+  transform-origin: 0 50%;
+  transform: scaleX(var(--scroll-progress, 0));
+}
+
+.stage-progress {
+  transition: width 500ms ease;
+}
+
+/* Revelado de etapas (respaldo con JS cuando no hay Scroll-driven Animations). */
+.stage-reveal-fallback {
+  transition: opacity 600ms ease, transform 600ms ease;
+}
+.stage-reveal-fallback[data-visible='false'] {
+  opacity: 0.25;
+  transform: translateY(2rem);
+}
+
+@keyframes scroll-progress-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes stage-reveal {
+  from {
+    opacity: 0.25;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* CSS Scroll-driven Animations cuando el navegador las soporta. */
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: scroll-progress-grow linear both;
+    animation-timeline: scroll(root block);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .stage-reveal {
+      animation: stage-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+}
+
+/* View Transitions (resumen ↔ historia). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 300ms;
+}
+
+/* Movimiento reducido: todo el contenido visible y sin animaciones. */
+@media (prefers-reduced-motion: reduce) {
+  .story,
+  .stage-progress,
+  .stage-reveal-fallback {
+    transition: none !important;
+  }
+  .stage-reveal,
+  .stage-reveal-fallback,
+  .stage-reveal-fallback[data-visible='false'] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
